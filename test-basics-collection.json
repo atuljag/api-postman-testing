@@ -1,0 +1,225 @@
+{
+	"info": {
+		"_postman_id": "d47954b7-58de-4bea-be88-1f9437644af8",
+		"name": "test-basics",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "20524269"
+	},
+	"item": [
+		{
+			"name": "GET-Request",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"// Pre-request script",
+							"pm.environment.set(\"baseURL\", \"https://reqres.in\");",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"",
+							"pm.test(\"Response time is less than 200ms\", function () {",
+							"    pm.expect(pm.response.responseTime).to.be.below(1000);",
+							"});",
+							"",
+							"pm.test(\"Response body is in JSON format\", function () {",
+							"    pm.response.to.be.json;",
+							"});",
+							"",
+							"pm.test(\"Response body has expected fields\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    pm.expect(jsonData).to.have.property('page');",
+							"    pm.expect(jsonData).to.have.property('per_page');",
+							"    pm.expect(jsonData).to.have.property('total');",
+							"    pm.expect(jsonData).to.have.property('total_pages');",
+							"    pm.expect(jsonData).to.have.property('data');",
+							"});",
+							"",
+							"pm.test(\"Response body is for the correct page\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    pm.expect(jsonData.page).to.eql(2);",
+							"});",
+							"",
+							"pm.test(\"Data array is not empty\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    pm.expect(jsonData.data.length).to.be.above(0);",
+							"});",
+							"",
+							"pm.test(\"Each user object has expected properties\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    jsonData.data.forEach(function (user) {",
+							"        pm.expect(user).to.have.property('id');",
+							"        pm.expect(user).to.have.property('email');",
+							"        pm.expect(user).to.have.property('first_name');",
+							"        pm.expect(user).to.have.property('last_name');",
+							"        pm.expect(user).to.have.property('avatar');",
+							"    });",
+							"});",
+							"",
+							"pm.test(\"Content-Type is application/json\", function () {",
+							"    pm.response.to.have.header(\"Content-Type\", \"application/json; charset=utf-8\");",
+							"});",
+							"",
+							"pm.test(\"Correct number of items per page\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    pm.expect(jsonData.data.length).to.eql(jsonData.per_page);",
+							"});",
+							"",
+							"pm.test(\"Total pages is a positive number\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    pm.expect(jsonData.total_pages).to.be.above(0);",
+							"});",
+							"",
+							"",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{baseURL}}/api/users?page=2",
+					"host": [
+						"{{baseURL}}"
+					],
+					"path": [
+						"api",
+						"users"
+					],
+					"query": [
+						{
+							"key": "page",
+							"value": "2"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "POST-User",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"// Pre-request script",
+							"",
+							"// Log the request details",
+							"console.log(\"Making a request to the users API\");",
+							"",
+							"// Set the request body",
+							"const requestBody = {",
+							"    \"name\": \"morpheus\",",
+							"    \"job\": \"leader\"",
+							"};",
+							"pm.environment.set(\"requestBody\", JSON.stringify(requestBody));",
+							"",
+							"// Set any necessary headers",
+							"pm.request.headers.add({key: 'Content-Type', value: 'application/json'});",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"// Post-request script",
+							"",
+							"// Parse the response body",
+							"let response = pm.response.json();",
+							"",
+							"// Log the response",
+							"console.log(\"Response received:\", response);",
+							"",
+							"// Tests for the response",
+							"pm.test(\"Status code is 201\", function () {",
+							"    pm.response.to.have.status(201);",
+							"});",
+							"",
+							"pm.test(\"Response body has name\", function () {",
+							"    pm.expect(response).to.have.property(\"name\");",
+							"});",
+							"",
+							"pm.test(\"Response body has job\", function () {",
+							"    pm.expect(response).to.have.property(\"job\");",
+							"});",
+							"",
+							"pm.test(\"Response body has id\", function () {",
+							"    pm.expect(response).to.have.property(\"id\");",
+							"});",
+							"",
+							"pm.test(\"Response body has createdAt\", function () {",
+							"    pm.expect(response).to.have.property(\"createdAt\");",
+							"});",
+							"",
+							"// Check the values in the response",
+							"pm.test(\"Name is 'morpheus'\", function () {",
+							"    pm.expect(response.name).to.eql(\"morpheus\");",
+							"});",
+							"",
+							"pm.test(\"Job is 'leader'\", function () {",
+							"    pm.expect(response.job).to.eql(\"leader\");",
+							"});",
+							"",
+							"// Check the format of id (assuming it's a numeric string)",
+							"pm.test(\"ID is a numeric string\", function () {",
+							"    pm.expect(response.id).to.match(/^\\d+$/);",
+							"});",
+							"",
+							"// Check the format of createdAt (assuming ISO 8601 format)",
+							"pm.test(\"createdAt is a valid ISO 8601 date\", function () {",
+							"    pm.expect(response.createdAt).to.match(/^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}\\.\\d{3}Z$/);",
+							"});",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"name\": \"morpheus\",\n    \"job\": \"leader\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{baseURL}}/api/users",
+					"host": [
+						"{{baseURL}}"
+					],
+					"path": [
+						"api",
+						"users"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}
