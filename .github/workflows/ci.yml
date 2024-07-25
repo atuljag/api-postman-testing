@@ -1,4 +1,4 @@
-name: Run Postman Tests
+name: yml workflow
 
 on:
   push:
